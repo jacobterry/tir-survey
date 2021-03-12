@@ -190,7 +190,7 @@ function findTravelTimes() {
                 if (!transferStateIsActive) {
                   // Transfer state is NOT active, so we will start one
                   transfers += 1;
-                  transferStateIsActive == true;
+                  transferStateIsActive = true;
                 }
               }
             } else if (step.travel_mode == "TRANSIT") {
@@ -203,10 +203,11 @@ function findTravelTimes() {
                 } else {
                   document.getElementById("GoogleRequest_transitStatus").value = "Directions: OK. No headway found so wait time set to 0.";                  
                 }
+                firstTransit = false;
               }
               if (transferStateIsActive) {
                 // A transfer is being measured, so end the transfer and calculate the length
-                transferStateIsActive == false;
+                transferStateIsActive = false;
               }
               if (tempArrivalTime != 0) {
                 let tempDepartureTime = step.transit.departure_time.value;
