@@ -54,6 +54,29 @@ function saveDestinationGeometry() {
   destinationLng = place.geometry.location.lng();
 }
 
+function setDriveTimeStatus(driveTimeFound) {
+  let driveResult = document.getElementById("drive-result");
+  if (driveTimeFound) {
+    driveResult.className = "success";
+    driveResult.textContent = "Found";
+  } else {
+    driveResult.className = "failure";
+    driveResult.textContent = "Error finding drive time"
+  }
+}
+
+function setCycleTimeStatus(cycleTimeFound) {
+  let cycleResult = document.getElementById("cycle-result");
+  if (cycleTimeFound) {
+    cycleResult.className = "success";
+    cycleResult.textContent = "Found";
+  }
+  else {
+    cycleResult.className = "failure";
+    cycleResult.textContent = "Error finding cycle time"
+  }
+}
+
 function findTravelTimes() {
   let departureDay = document.getElementById("departure-day").value;
   let departureHour = document.getElementById("departure-hour").value;
@@ -107,13 +130,16 @@ function findTravelTimes() {
         document.getElementById("GoogleRequest_driveStatus").value = "Distance Matrix: " + distanceMatrixStatus;
         if (distanceMatrixStatus == "OK") {
           autoDuration = Math.round(originDestinationPair.duration.value / 60);
-          document.getElementById("GoogleRequest_driveTime").value = autoDuration
+          document.getElementById("GoogleRequest_driveTime").value = autoDuration;
+          setDriveTimeStatus(true);
         } else {
           alert("Travel times for driving not found, try entering the locations again or contact the survey administrators at jacob.terry@uwaterloo.ca.")
+          setDriveTimeStatus(false);
         }
       } else {
         document.getElementById("GoogleRequest_driveStatus").value = "Request: " + status;
         document.getElementById("GoogleRequest_driveTime").value = "";
+        setDriveTimeStatus(false);
       }
     })
     // Cycling (Distance Matrix)
@@ -133,12 +159,15 @@ function findTravelTimes() {
         if (distanceMatrixStatus == "OK") {
           cycleDuration = Math.round(originDestinationPair.duration.value / 60);
           document.getElementById("GoogleRequest_cycleTime").value = cycleDuration
+          setCycleTimeStatus(true);
         } else {
           alert("Travel times for cycling not found, try entering the locations again or contact the survey administrators at jacob.terry@uwaterloo.ca.")
+          setCycleTimeStatus(false);
         }
       } else {
         document.getElementById("GoogleRequest_cycleStatus").value = "Request: " + status;
         document.getElementById("GoogleRequest_cycleTime").value = "";
+        setCycleTimeStatus(false);
       }
     })
     // Transit (Directions)
@@ -159,7 +188,6 @@ function findTravelTimes() {
       if (status == "OK") {
         document.getElementById("GoogleRequest_transitStatus").value = "Directions: " + status;
         let tripLegs = response.routes[0].legs[0];
-        console.log(tripLegs);
         document.getElementById("GoogleRequest_transitTime").value = Math.round(tripLegs.duration.value/60);
         let walkTime = 0;
         let waitTime = 0;
